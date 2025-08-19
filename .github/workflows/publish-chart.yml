@@ -1,0 +1,30 @@
+name: Publish Helm Chart
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Git
+        run: |
+          git config --global user.email "nisimamir@gmail.com"
+          git config --global user.name "Nissim Amira"
+
+      - name: Package Helm chart
+        run: |
+          helm package class05/mychart
+          helm repo index . --url https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+
+      - name: Push to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          publish_branch: gh-pages
