@@ -29,3 +29,4 @@ jobs:
           publish_dir: chart-output
           publish_branch: gh-pages
           force_orphan: true
+          external_repository: ${{ github.repository }}
