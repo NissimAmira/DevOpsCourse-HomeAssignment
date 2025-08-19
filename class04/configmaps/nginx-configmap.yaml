@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nissim-nginx-config
+  labels:
+    app: nissim-nginx
+data:
+  NGINX_PORT: "80"
+  NGINX_SERVER_NAME: "_"
+
+  nginx.conf: |
+    events {
+    worker_connections 1024;
+    }
+    
+    http {
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+        
+        server {
+            listen 80;
+            server_name _;
+            root /usr/share/nginx/html;
+            index index.html index.htm;
+            
+            location / {
+                try_files $uri $uri/ =404;
+            }
+            
+            location /healthz {
+                access_log off;
+                return 200 'OK';
+                add_header Content-Type text/plain;
+            }
+        }
+    }

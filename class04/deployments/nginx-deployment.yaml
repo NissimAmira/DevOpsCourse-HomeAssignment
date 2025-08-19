@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nissim-nginx
+  labels:
+    app: nissim-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nissim-nginx
+  template:
+    metadata:
+      name: nissim-nginx
+      labels:
+        app: nissim-nginx
+    spec:
+      containers:
+        - name: nissim-nginx
+          image: nginx
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /usr/share/nginx/html
+              name: nissim-storage
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+          livenessProbe:
+              httpGet:
+                path: /healthz
+                port: 80
+              initialDelaySeconds: 30
+              periodSeconds: 10
+          readinessProbe:
+              httpGet:
+                path: /healthz
+                port: 80
+              initialDelaySeconds: 5
+              periodSeconds: 5
+      volumes:
+        - name: nissim-storage
+          persistentVolumeClaim:
+            claimName: nissim-pvc
+        - name: nginx-config
+          configMap:
+            name: nissim-nginx-config
+      restartPolicy: Always

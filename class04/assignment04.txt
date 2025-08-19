@@ -1,0 +1,46 @@
+# Kubernetes Assignment
+## Objective
+The goal of this assignment is to deepen your understanding of Kubernetes features related to
+storage, configuration management, scaling, and application lifecycle management by applying
+them in a practical context.
+
+## Tasks
+You are tasked with creating a Kubernetes deployment for a sample application using the
+following Kubernetes features:
+
+### Task 1: Storage (Persistent Volume & Persistent Volume Claim)
+1. Create a PersistentVolume (PV) with a minimum size of 2Gi.
+2. Create a PersistentVolumeClaim (PVC) that requests 1Gi of storage from the PV.
+3. Mount the PVC to a deployment pod running an Nginx container.
+4. Verify that the pod has successfully mounted the volume by writing a sample file and
+checking its persistence.
+
+### Task 2: ConfigMap
+1. Create a ConfigMap containing Nginx configuration (e.g., nginx.conf file or environment
+variables).
+2. Use the ConfigMap in the Nginx deployment to:
+- Load environment variables into the container.
+- Optionally, mount a configuration file inside the container using the ConfigMap.
+
+### Task 3: Horizontal Pod Autoscaling (HPA)
+1. Create a simple deployment for an application that responds with a random number (e.g.,
+using a Python Flask app).
+2. Set up Horizontal Pod Autoscaling to scale the pods based on CPU utilization:
+- Minimum number of pods: 2
+- Maximum number of pods: 5
+- Target CPU utilization: 50%
+
+### Task 4: CronJobs
+1. Create a CronJob that prints the current date and time to a log file every minute.
+2. Use a sidecar container in the CronJob pod to write the logs to a mounted persistent volume.
+
+### Task 5: Liveness Probe
+1. Add a Liveness Probe to the Nginx deployment to check if the Nginx process is running by
+using an HTTP GET request on /healthz.
+2. Ensure that if the probe fails, Kubernetes restarts the container.
+
+### Task 6: Readiness Probe
+1. Add a Readiness Probe to the Nginx deployment that checks if the container is ready to serve
+traffic on port 80.
+2. Test the readiness probe by simulating delays in startup and observe how Kubernetes
+handles the pod during that time.

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: random-number-deployment
+  labels:
+    app: random-number-deployment
+spec:
+  replicas: 2 #HPA Minimum
+  selector:
+    matchLabels:
+      app: random-number-deployment
+  template:
+    metadata:
+      labels:
+        app: random-number-deployment
+    spec:
+      containers:
+        - name: random-number-deployment
+          image: amiranissim/random-number-app:latest
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          ports:
+            - containerPort: 5000
+              protocol: TCP
+      restartPolicy: Always

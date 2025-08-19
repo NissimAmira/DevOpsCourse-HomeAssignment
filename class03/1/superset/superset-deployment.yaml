@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: superset
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: superset
+  template:
+    metadata:
+      labels:
+        app: superset
+    spec:
+      containers:
+        - name: superset
+          image: amancevice/superset:4.1.2
+          env:
+            - name: PYTHONPATH
+              value: /app/pythonpath
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/pythonpath/superset_config.py
+              subPath: superset_config.py
+          ports:
+            - containerPort: 8088
+      volumes:
+        - name: config-volume
+          configMap:
+            name: superset-config

@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow
+  labels:
+    app: airflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: airflow
+  template:
+    metadata:
+      labels:
+        app: airflow
+    spec:
+      initContainers:
+        - name: airflow-init
+          image: apache/airflow:2.5.0
+          env:
+            - name: AIRFLOW__CORE__EXECUTOR
+              value: "LocalExecutor"
+            - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+              value: "postgresql://postgres:postgres@postgres-service:5432/airflow"
+            - name: AIRFLOW__CORE__LOAD_EXAMPLES
+              value: "True"
+            - name: LOAD_EX
+              value: "y"
+          command: ["/bin/bash"]
+          args: ["-c", "airflow db init && airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com || true"]
+          volumeMounts:
+            - name: airflow-dags
+              mountPath: /opt/airflow/dags
+      containers:
+        - name: airflow-webserver
+          image: apache/airflow:2.5.0
+          env:
+            - name: AIRFLOW__CORE__EXECUTOR
+              value: "LocalExecutor"
+            - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+              value: "postgresql://postgres:postgres@postgres-service:5432/airflow"
+            - name: AIRFLOW__CORE__LOAD_EXAMPLES
+              value: "True"
+            - name: LOAD_EX
+              value: "y"
+          ports:
+            - containerPort: 8080
+          command: ["airflow"]
+          args: ["webserver", "--port", "8080"]
+          volumeMounts:
+            - name: airflow-dags
+              mountPath: /opt/airflow/dags
+        - name: airflow-scheduler
+          image: apache/airflow:2.5.0
+          env:
+            - name: AIRFLOW__CORE__EXECUTOR
+              value: "LocalExecutor"
+            - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+              value: "postgresql://postgres:postgres@postgres-service:5432/airflow"
+            - name: AIRFLOW__CORE__LOAD_EXAMPLES
+              value: "True"
+            - name: LOAD_EX
+              value: "y"
+          command: ["airflow"]
+          args: ["scheduler"]
+          volumeMounts:
+            - name: airflow-dags
+              mountPath: /opt/airflow/dags
+      volumes:
+        - name: airflow-dags
+          emptyDir: {}

@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nissim-cronjob
+spec:
+  schedule: "* * * * *" #	Run every minute
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: nissim-cronjob
+              image: busybox:latest
+              imagePullPolicy: IfNotPresent
+              volumeMounts:
+                - name: shared-logs
+                  mountPath: /shared-logs
+              command:
+                - /bin/sh
+                - -c
+                - date >> /shared-logs/timestamps.log
+            - name: nissim-cronjob-sidecar
+              image: busybox:latest
+              imagePullPolicy: IfNotPresent
+              volumeMounts:
+                - name: shared-logs
+                  mountPath: /shared-logs
+              command:
+                - /bin/sh
+                - -c
+                - cat /shared-logs/timestamps.log
+          volumes:
+            - name: shared-logs
+              persistentVolumeClaim:
+                claimName: nissim-pvc
+          restartPolicy: OnFailure
