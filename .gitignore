@@ -1,0 +1,28 @@
+# OS generated files
+.DS_Store
+._*
+
+# Editor directories and files
+.vscode/
+../.idea/
+*.swp
+*.swo
+*~
+
+# Temporary folders
+tmp/
+temp/
+
+# Environment variables
+.env
+.env.local
+
+# Secrets and keys
+*.key
+*.pem
+*.crt
+*.p12
+secrets/
+
+# DevOps specific
+chart-output/
